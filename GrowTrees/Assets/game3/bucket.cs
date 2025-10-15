@@ -4,7 +4,7 @@ public class BucketController : MonoBehaviour
 {
     [Header("Настройки движения")]
     public float moveSpeed = 5f;
-    public float xLimit = 8f; // Ограничение по горизонтали
+    public float xLimit = 8f;
 
     private Camera mainCamera;
     private Vector3 dragOffset;
@@ -14,7 +14,7 @@ public class BucketController : MonoBehaviour
     {
         mainCamera = Camera.main;
 
-        // Автоматически добавляем коллайдер если нет
+
         if (GetComponent<Collider2D>() == null)
         {
             gameObject.AddComponent<BoxCollider2D>();
@@ -35,9 +35,8 @@ public class BucketController : MonoBehaviour
         Vector3 mouseWorldPos = GetMouseWorldPosition();
         Vector3 targetPosition = mouseWorldPos + dragOffset;
 
-        // Ограничиваем движение по горизонтали
         targetPosition.x = Mathf.Clamp(targetPosition.x, -xLimit, xLimit);
-        targetPosition.y = transform.position.y; // Сохраняем Y позицию
+        targetPosition.y = transform.position.y;
 
         transform.position = targetPosition;
     }
@@ -49,7 +48,6 @@ public class BucketController : MonoBehaviour
 
     void Update()
     {
-        // Альтернативное управление клавишами (для тестирования)
         HandleKeyboardInput();
     }
 
@@ -71,7 +69,6 @@ public class BucketController : MonoBehaviour
         return mainCamera.ScreenToWorldPoint(mousePos);
     }
 
-    // Обработка столкновения с каплями
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("WaterDrop"))

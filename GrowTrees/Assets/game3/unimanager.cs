@@ -18,18 +18,15 @@ public class GameCompletionManager : MonoBehaviour
 
     void Start()
     {
-        // Скрываем панель окончания игры в начале
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
 
-        // Настраиваем кнопки
         if (mainMenuButton != null)
             mainMenuButton.onClick.AddListener(GoToMainMenu);
 
         Debug.Log("GameCompletionManager инициализирован");
     }
 
-    // Метод для завершения игры с кастомным сообщением
     public void CompleteGame(bool isWin, string winMessage, string loseMessage)
     {
         if (gameCompleted) return;
@@ -40,7 +37,6 @@ public class GameCompletionManager : MonoBehaviour
         StartCoroutine(ShowGameOverCoroutine(isWin, winMessage, loseMessage));
     }
 
-    // Перегруженный метод для простого использования
     public void CompleteGame(bool isWin)
     {
         string winMessage = "ПОБЕДА!";
@@ -53,7 +49,6 @@ public class GameCompletionManager : MonoBehaviour
         Debug.Log("🔄 Запуск корутины показа экрана завершения...");
         yield return null;
 
-        // Показываем UI
         ShowGameOverUI(isWin, winMessage, loseMessage);
 
         Debug.Log("✅ Корутина завершена");
@@ -61,12 +56,10 @@ public class GameCompletionManager : MonoBehaviour
 
     void ShowGameOverUI(bool isWin, string winMessage, string loseMessage)
     {
-        // Если панель назначена в инспекторе - используем ее
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
 
-            // Устанавливаем текст в зависимости от результата
             if (gameOverText != null)
             {
                 gameOverText.text = isWin ? winMessage : loseMessage;
@@ -77,7 +70,6 @@ public class GameCompletionManager : MonoBehaviour
         }
         else
         {
-            // Если нет - создаем UI через код
             Debug.Log("🛠️ Создание UI через код...");
             CreateGameOverUI(isWin, winMessage, loseMessage);
         }
@@ -85,7 +77,6 @@ public class GameCompletionManager : MonoBehaviour
 
     void CreateGameOverUI(bool isWin, string winMessage, string loseMessage)
     {
-        // Создаем Canvas
         GameObject canvasObj = new GameObject("GameOverCanvas");
         Canvas canvas = canvasObj.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -97,7 +88,6 @@ public class GameCompletionManager : MonoBehaviour
 
         canvasObj.AddComponent<GraphicRaycaster>();
 
-        // Создаем панель
         gameOverPanel = new GameObject("Panel");
         gameOverPanel.transform.SetParent(canvasObj.transform);
         RectTransform panelRect = gameOverPanel.AddComponent<RectTransform>();
@@ -109,7 +99,6 @@ public class GameCompletionManager : MonoBehaviour
         Image panelImage = gameOverPanel.AddComponent<Image>();
         panelImage.color = new Color(0, 0, 0, 0.8f);
 
-        // Создаем текст
         GameObject textObj = new GameObject("Text");
         textObj.transform.SetParent(gameOverPanel.transform);
         RectTransform textRect = textObj.AddComponent<RectTransform>();
@@ -127,7 +116,6 @@ public class GameCompletionManager : MonoBehaviour
         gameOverText.fontSizeMin = 24;
         gameOverText.fontSizeMax = 72;
 
-        // Создаем кнопку главного меню
         GameObject menuButtonObj = new GameObject("MenuButton");
         menuButtonObj.transform.SetParent(gameOverPanel.transform);
         RectTransform menuButtonRect = menuButtonObj.AddComponent<RectTransform>();
@@ -142,7 +130,6 @@ public class GameCompletionManager : MonoBehaviour
         mainMenuButton = menuButtonObj.AddComponent<Button>();
         mainMenuButton.onClick.AddListener(GoToMainMenu);
 
-        // Текст кнопки главного меню
         GameObject menuButtonTextObj = new GameObject("ButtonText");
         menuButtonTextObj.transform.SetParent(menuButtonObj.transform);
         RectTransform menuButtonTextRect = menuButtonTextObj.AddComponent<RectTransform>();

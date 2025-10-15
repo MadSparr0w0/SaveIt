@@ -15,7 +15,6 @@ public class PuzzlePieceFixed : MonoBehaviour
     private Camera mainCamera;
     private Vector3 originalPosition;
 
-    // Статические переменные для отслеживания
     private static int lockedPiecesCount = 0;
     private static int totalPiecesCount = 0;
 
@@ -29,7 +28,6 @@ public class PuzzlePieceFixed : MonoBehaviour
             mainCamera = FindObjectOfType<Camera>();
         }
 
-        // Увеличиваем общее количество элементов пазла
         totalPiecesCount++;
 
         Debug.Log($"{name} инициализирован. Камера: {mainCamera?.name}. Всего элементов: {totalPiecesCount}");
@@ -101,11 +99,9 @@ public class PuzzlePieceFixed : MonoBehaviour
 
             Debug.Log($"✅ {name} закреплен на месте!");
 
-            // Увеличиваем счетчик заблокированных элементов
             lockedPiecesCount++;
             Debug.Log($"Заблокировано элементов: {lockedPiecesCount}/{totalPiecesCount}");
 
-            // Сообщаем GameManager о блокировке
             PuzzleGameManager gameManager = FindObjectOfType<PuzzleGameManager>();
             if (gameManager != null)
             {
@@ -118,7 +114,6 @@ public class PuzzlePieceFixed : MonoBehaviour
 
     void CheckPuzzleCompletion()
     {
-        // Проверяем, весь ли пазл собран
         if (lockedPiecesCount >= totalPiecesCount)
         {
             Debug.Log($"🎉 ВЕСЬ ПАЗЛ СОБРАН! Заблокировано: {lockedPiecesCount}/{totalPiecesCount}");
@@ -129,7 +124,6 @@ public class PuzzlePieceFixed : MonoBehaviour
         }
     }
 
-    // Метод для проверки заблокирован ли элемент
     public bool IsLocked()
     {
         return isLocked;
@@ -137,7 +131,6 @@ public class PuzzlePieceFixed : MonoBehaviour
 
     public void ResetPiece()
     {
-        // Если элемент был заблокирован, уменьшаем счетчик
         if (isLocked)
         {
             lockedPiecesCount--;
@@ -154,7 +147,6 @@ public class PuzzlePieceFixed : MonoBehaviour
         }
     }
 
-    // Статические методы для управления счетчиками
     public static void ResetCounters()
     {
         lockedPiecesCount = 0;

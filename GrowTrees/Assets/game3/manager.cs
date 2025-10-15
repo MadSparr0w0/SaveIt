@@ -34,11 +34,11 @@ public class WaterDropManager : MonoBehaviour
         mainCamera = Camera.main;
         canvas = FindObjectOfType<Canvas>();
 
-        // Находим менеджер завершения игры
+
         completionManager = FindObjectOfType<GameCompletionManager>();
         if (completionManager == null)
         {
-            // Создаем менеджер завершения если его нет
+
             GameObject completionObj = new GameObject("GameCompletionManager");
             completionManager = completionObj.AddComponent<GameCompletionManager>();
         }

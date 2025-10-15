@@ -16,7 +16,6 @@ public class GarbageItem : MonoBehaviour
     private Vector3 originalPosition;
     private SpriteRenderer spriteRenderer;
 
-    // Статические переменные для отслеживания
     private static int lockedGarbageCount = 0;
     private static int totalGarbageCount = 0;
 
@@ -134,18 +133,15 @@ public class GarbageItem : MonoBehaviour
 
         bin.OnGarbageDropped(this);
 
-        // Увеличиваем счетчик заблокированного мусора
         lockedGarbageCount++;
         Debug.Log($"Заблокировано мусора: {lockedGarbageCount}/{totalGarbageCount}");
 
-        // Сообщаем GameManager о блокировке
         GarbageGameManager gameManager = FindObjectOfType<GarbageGameManager>();
         if (gameManager != null)
         {
             gameManager.OnGarbageLocked();
         }
 
-        // Проверяем завершение уровня
         CheckLevelComplete();
     }
 
@@ -176,7 +172,6 @@ public class GarbageItem : MonoBehaviour
 
     void CheckLevelComplete()
     {
-        // Проверяем, весь ли мусор заблокирован
         if (lockedGarbageCount >= totalGarbageCount)
         {
             Debug.Log($"🎉 ВЕСЬ МУСОР СОРТИРОВАН! Заблокировано: {lockedGarbageCount}/{totalGarbageCount}");
@@ -187,7 +182,6 @@ public class GarbageItem : MonoBehaviour
         }
     }
 
-    // Метод для проверки заблокирован ли мусор
     public bool IsLocked()
     {
         return isLocked;
@@ -195,7 +189,6 @@ public class GarbageItem : MonoBehaviour
 
     public void ResetGarbage()
     {
-        // Если мусор был заблокирован, уменьшаем счетчик
         if (isLocked)
         {
             lockedGarbageCount--;
@@ -211,7 +204,6 @@ public class GarbageItem : MonoBehaviour
         if (collider != null) collider.enabled = true;
     }
 
-    // Статические методы для управления счетчиками
     public static void ResetCounters()
     {
         lockedGarbageCount = 0;

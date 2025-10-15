@@ -6,7 +6,6 @@ public class GarbageAutoManager : MonoBehaviour
     {
         Debug.Log("=== АВТОМАТИЧЕСКАЯ ПРОВЕРКА СИСТЕМЫ ===");
 
-        // Проверяем мусор
         GarbageItem[] allGarbage = FindObjectsByType<GarbageItem>(FindObjectsSortMode.None);
         Debug.Log($"Найдено мусора: {allGarbage.Length}");
 
@@ -16,7 +15,6 @@ public class GarbageAutoManager : MonoBehaviour
             Debug.Log($"Мусор: {garbage.name} -> Автоопределен как: {type}");
         }
 
-        // Проверяем мусорки
         GarbageBin[] allBins = FindObjectsByType<GarbageBin>(FindObjectsSortMode.None);
         Debug.Log($"Найдено мусорок: {allBins.Length}");
 

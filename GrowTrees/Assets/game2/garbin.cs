@@ -12,7 +12,7 @@ public class GarbageBin : MonoBehaviour
 
     void Start()
     {
-        // Автоматически определяем тип мусорки по имени
+
         AutoDetectBinType();
 
         Debug.Log($"Мусорка {name} готова. Принимает: {acceptedGarbageType}");
@@ -20,7 +20,7 @@ public class GarbageBin : MonoBehaviour
 
     void AutoDetectBinType()
     {
-        // Автоматически определяем тип мусорки по имени
+
         if (name.ToLower().Contains("bin1"))
         {
             acceptedGarbageType = GarbageItem.GarbageType.Plastic;
@@ -36,25 +36,22 @@ public class GarbageBin : MonoBehaviour
         }
     }
 
-    // Вызывается когда мусор правильно выброшен
+
     public void OnGarbageDropped(GarbageItem garbage)
     {
         garbageCount++;
         Debug.Log($"Мусорка {name} приняла {garbageCount} мусора типа {acceptedGarbageType}");
 
-        // Можно добавить звук успеха здесь, но без изменения цвета
+
     }
 
-    // Позиция куда будет помещен мусор (теперь не используется для позиционирования, но оставим для возможных эффектов)
     public Vector3 GetDropPosition()
     {
         return transform.position + dropOffset;
     }
 
-    // Визуализация в редакторе
     void OnDrawGizmosSelected()
     {
-        // Показываем зону притягивания
         Gizmos.color = acceptedGarbageType == GarbageItem.GarbageType.Plastic ?
             Color.blue : Color.yellow;
         Gizmos.DrawWireSphere(transform.position, 1.5f);

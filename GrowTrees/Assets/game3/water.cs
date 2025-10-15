@@ -26,7 +26,6 @@ public class WaterDrop : MonoBehaviour
     {
         if (!isActive) return;
 
-        // Движение вниз через RectTransform
         if (rectTransform != null)
         {
             rectTransform.anchoredPosition -= new Vector2(0, fallSpeed * Time.deltaTime);
@@ -36,7 +35,6 @@ public class WaterDrop : MonoBehaviour
             transform.Translate(Vector3.down * fallSpeed * Time.deltaTime);
         }
 
-        // Таймер самоуничтожения
         timer -= Time.deltaTime;
         if (timer <= 0f)
         {

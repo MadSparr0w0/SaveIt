@@ -17,25 +17,20 @@ public class GarbageGameManager : MonoBehaviour
 
     void Start()
     {
-        // Находим ВСЕ объекты мусора, включая неактивные
         GarbageItem[] allGarbage = FindObjectsOfType<GarbageItem>(true);
         totalGarbageCount = allGarbage.Length;
 
-        // Сбрасываем счетчики в GarbageItem
         GarbageItem.ResetCounters();
         GarbageItem.SetTotalGarbageCount(totalGarbageCount);
 
-        // Скрываем панель окончания игры в начале
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
 
-        // Настраиваем кнопку главного меню
         if (mainMenuButton != null)
             mainMenuButton.onClick.AddListener(GoToMainMenu);
 
         Debug.Log($"GarbageGameManager инициализирован. Всего мусора: {totalGarbageCount}");
 
-        // Проверяем какие объекты найдены
         foreach (GarbageItem garbage in allGarbage)
         {
             Debug.Log($"Найден мусор: {garbage.name}, активен: {garbage.gameObject.activeInHierarchy}");
@@ -44,7 +39,6 @@ public class GarbageGameManager : MonoBehaviour
 
     void Update()
     {
-        // Тест по клавише Space для отладки
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("=== ТЕСТОВЫЙ ВЫЗОВ ЗАВЕРШЕНИЯ ИГРЫ ===");
@@ -52,14 +46,12 @@ public class GarbageGameManager : MonoBehaviour
             OnLevelCompleted();
         }
 
-        // Тест по клавише T - показать информацию о мусоре
         if (Input.GetKeyDown(KeyCode.T))
         {
             ShowGarbageInfo();
         }
     }
 
-    // Этот метод вызывается из GarbageItem когда мусор блокируется
     public void OnGarbageLocked()
     {
         lockedGarbageCount++;
@@ -93,7 +85,6 @@ public class GarbageGameManager : MonoBehaviour
         Debug.Log("🔄 Запуск корутины показа экрана завершения...");
         yield return null;
 
-        // Показываем UI
         ShowGameOverUI();
 
         Debug.Log("✅ Корутина завершена");
@@ -101,7 +92,6 @@ public class GarbageGameManager : MonoBehaviour
 
     void ShowGameOverUI()
     {
-        // Если панель назначена в инспекторе - используем ее
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
@@ -109,7 +99,6 @@ public class GarbageGameManager : MonoBehaviour
         }
         else
         {
-            // Если нет - создаем UI через код
             Debug.Log("🛠️ Создание UI через код...");
             CreateGameOverUI();
         }
@@ -117,7 +106,6 @@ public class GarbageGameManager : MonoBehaviour
 
     void CreateGameOverUI()
     {
-        // Создаем Canvas
         GameObject canvasObj = new GameObject("GameOverCanvas");
         Canvas canvas = canvasObj.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -129,7 +117,6 @@ public class GarbageGameManager : MonoBehaviour
 
         canvasObj.AddComponent<GraphicRaycaster>();
 
-        // Создаем панель
         gameOverPanel = new GameObject("Panel");
         gameOverPanel.transform.SetParent(canvasObj.transform);
         RectTransform panelRect = gameOverPanel.AddComponent<RectTransform>();
@@ -141,7 +128,6 @@ public class GarbageGameManager : MonoBehaviour
         Image panelImage = gameOverPanel.AddComponent<Image>();
         panelImage.color = new Color(0, 0, 0, 0.8f);
 
-        // Создаем текст
         GameObject textObj = new GameObject("Text");
         textObj.transform.SetParent(gameOverPanel.transform);
         RectTransform textRect = textObj.AddComponent<RectTransform>();
@@ -156,7 +142,6 @@ public class GarbageGameManager : MonoBehaviour
         gameOverText.alignment = TextAlignmentOptions.Center;
         gameOverText.fontSize = 72;
 
-        // Создаем кнопку
         GameObject buttonObj = new GameObject("Button");
         buttonObj.transform.SetParent(gameOverPanel.transform);
         RectTransform buttonRect = buttonObj.AddComponent<RectTransform>();
@@ -171,7 +156,6 @@ public class GarbageGameManager : MonoBehaviour
         mainMenuButton = buttonObj.AddComponent<Button>();
         mainMenuButton.onClick.AddListener(GoToMainMenu);
 
-        // Текст кнопки
         GameObject buttonTextObj = new GameObject("ButtonText");
         buttonTextObj.transform.SetParent(buttonObj.transform);
         RectTransform buttonTextRect = buttonTextObj.AddComponent<RectTransform>();
@@ -189,7 +173,6 @@ public class GarbageGameManager : MonoBehaviour
         Debug.Log("🎯 UI ЗАВЕРШЕНИЯ ИГРЫ СОЗДАН!");
     }
 
-    // Этот метод вызывается принудительно для тестирования
     public void OnLevelCompleted()
     {
         if (gameCompleted) return;
@@ -202,7 +185,7 @@ public class GarbageGameManager : MonoBehaviour
     public void GoToMainMenu()
     {
         Debug.Log("🔄 Загрузка главного меню...");
-        SceneManager.LoadScene("Main"); // ИЗМЕНЕНО: "MainMenu" → "Main"
+        SceneManager.LoadScene("Main"); 
     }
 
     public void ResetLevel()
