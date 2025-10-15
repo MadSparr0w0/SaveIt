@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class GarbageItem : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class GarbageItem : MonoBehaviour
     private Camera mainCamera;
     private Vector3 originalPosition;
     private SpriteRenderer spriteRenderer;
+
+    // Статические переменные для отслеживания
+    private static int lockedGarbageCount = 0;
+    private static int totalGarbageCount = 0;
 
     public enum GarbageType
     {
@@ -80,7 +85,7 @@ public class GarbageItem : MonoBehaviour
         isDragging = false;
         spriteRenderer.sortingOrder = 1;
 
-        GarbageBin[] allBins = FindObjectsByType<GarbageBin>(FindObjectsSortMode.None);
+        GarbageBin[] allBins = FindObjectsOfType<GarbageBin>();
         GarbageBin closestBin = null;
         float closestDistance = float.MaxValue;
 
@@ -129,6 +134,18 @@ public class GarbageItem : MonoBehaviour
 
         bin.OnGarbageDropped(this);
 
+        // Увеличиваем счетчик заблокированного мусора
+        lockedGarbageCount++;
+        Debug.Log($"Заблокировано мусора: {lockedGarbageCount}/{totalGarbageCount}");
+
+        // Сообщаем GameManager о блокировке
+        GarbageGameManager gameManager = FindObjectOfType<GarbageGameManager>();
+        if (gameManager != null)
+        {
+            gameManager.OnGarbageLocked();
+        }
+
+        // Проверяем завершение уровня
         CheckLevelComplete();
     }
 
@@ -159,30 +176,31 @@ public class GarbageItem : MonoBehaviour
 
     void CheckLevelComplete()
     {
-        GarbageItem[] allGarbage = FindObjectsByType<GarbageItem>(FindObjectsSortMode.None);
-        int remainingGarbage = 0;
-
-        foreach (GarbageItem garbage in allGarbage)
+        // Проверяем, весь ли мусор заблокирован
+        if (lockedGarbageCount >= totalGarbageCount)
         {
-            if (!garbage.isLocked) remainingGarbage++;
+            Debug.Log($"🎉 ВЕСЬ МУСОР СОРТИРОВАН! Заблокировано: {lockedGarbageCount}/{totalGarbageCount}");
         }
-
-        Debug.Log($"Осталось мусора: {remainingGarbage}");
-
-        if (remainingGarbage <= 0)
+        else
         {
-            Debug.Log("🎉 ВЕСЬ МУСОР СОРТИРОВАН! УРОВЕНЬ ПРОЙДЕН!");
-            OnLevelComplete();
+            Debug.Log($"Осталось мусора: {totalGarbageCount - lockedGarbageCount}");
         }
     }
 
-    void OnLevelComplete()
+    // Метод для проверки заблокирован ли мусор
+    public bool IsLocked()
     {
-
+        return isLocked;
     }
 
     public void ResetGarbage()
     {
+        // Если мусор был заблокирован, уменьшаем счетчик
+        if (isLocked)
+        {
+            lockedGarbageCount--;
+        }
+
         transform.position = originalPosition;
         isLocked = false;
         isDragging = false;
@@ -191,5 +209,17 @@ public class GarbageItem : MonoBehaviour
 
         Collider2D collider = GetComponent<Collider2D>();
         if (collider != null) collider.enabled = true;
+    }
+
+    // Статические методы для управления счетчиками
+    public static void ResetCounters()
+    {
+        lockedGarbageCount = 0;
+        totalGarbageCount = 0;
+    }
+
+    public static void SetTotalGarbageCount(int count)
+    {
+        totalGarbageCount = count;
     }
 }
