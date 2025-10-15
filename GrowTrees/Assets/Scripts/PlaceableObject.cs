@@ -51,8 +51,6 @@ public class PlaceableObject : MonoBehaviour
 
             coinIndicator.transform.position = transform.position + new Vector3(0, 3f, 0);
 
-            coinIndicator.AddComponent<Billboard>();
-
             Debug.Log($"{objectName} готов к сбору!");
         }
 
