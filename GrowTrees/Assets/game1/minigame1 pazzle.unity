@@ -1739,6 +1739,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d852cdae758d540b952cb4d0f90c66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClickDebugger
+--- !u!1 &1037909000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1037909002}
+  - component: {fileID: 1037909001}
+  m_Layer: 0
+  m_Name: PuzzleGameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1037909001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1037909000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3155fc9f430be24f914c9e2d3bdbe96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PuzzleGameManager
+  gameOverPanel: {fileID: 0}
+  gameOverText: {fileID: 0}
+  mainMenuButton: {fileID: 0}
+--- !u!4 &1037909002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1037909000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.86601, y: 82.71243, z: -88.01041}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1089003310
 GameObject:
   m_ObjectHideFlags: 0
@@ -3891,3 +3938,4 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 1345795078}
   - {fileID: 1530268937}
+  - {fileID: 1037909002}

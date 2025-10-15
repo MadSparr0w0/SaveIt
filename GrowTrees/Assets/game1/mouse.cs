@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class PuzzlePieceFixed : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class PuzzlePieceFixed : MonoBehaviour
     private Camera mainCamera;
     private Vector3 originalPosition;
 
+    // Статические переменные для отслеживания
+    private static int lockedPiecesCount = 0;
+    private static int totalPiecesCount = 0;
+
     void Start()
     {
         mainCamera = Camera.main;
@@ -24,7 +29,10 @@ public class PuzzlePieceFixed : MonoBehaviour
             mainCamera = FindObjectOfType<Camera>();
         }
 
-        Debug.Log($"{name} инициализирован. Камера: {mainCamera?.name}");
+        // Увеличиваем общее количество элементов пазла
+        totalPiecesCount++;
+
+        Debug.Log($"{name} инициализирован. Камера: {mainCamera?.name}. Всего элементов: {totalPiecesCount}");
     }
 
     void OnMouseDown()
@@ -61,7 +69,6 @@ public class PuzzlePieceFixed : MonoBehaviour
 
     Vector3 GetMouseWorldPosition()
     {
-
         Vector3 mousePos = Input.mousePosition;
 
         if (mainCamera.orthographic)
@@ -72,7 +79,6 @@ public class PuzzlePieceFixed : MonoBehaviour
         }
         else
         {
-
             mousePos.z = Mathf.Abs(mainCamera.transform.position.z - transform.position.z);
             return mainCamera.ScreenToWorldPoint(mousePos);
         }
@@ -84,7 +90,6 @@ public class PuzzlePieceFixed : MonoBehaviour
 
         if (distance <= snapDistance)
         {
-
             transform.position = targetSlot.transform.position;
             isLocked = true;
 
@@ -96,36 +101,48 @@ public class PuzzlePieceFixed : MonoBehaviour
 
             Debug.Log($"✅ {name} закреплен на месте!");
 
+            // Увеличиваем счетчик заблокированных элементов
+            lockedPiecesCount++;
+            Debug.Log($"Заблокировано элементов: {lockedPiecesCount}/{totalPiecesCount}");
+
+            // Сообщаем GameManager о блокировке
+            PuzzleGameManager gameManager = FindObjectOfType<PuzzleGameManager>();
+            if (gameManager != null)
+            {
+                gameManager.OnPieceLocked();
+            }
+
             CheckPuzzleCompletion();
         }
     }
 
     void CheckPuzzleCompletion()
     {
-        PuzzlePieceFixed[] allPieces = FindObjectsByType<PuzzlePieceFixed>(FindObjectsSortMode.None);
-        int completedCount = 0;
-
-        foreach (PuzzlePieceFixed piece in allPieces)
+        // Проверяем, весь ли пазл собран
+        if (lockedPiecesCount >= totalPiecesCount)
         {
-            if (piece.isLocked) completedCount++;
+            Debug.Log($"🎉 ВЕСЬ ПАЗЛ СОБРАН! Заблокировано: {lockedPiecesCount}/{totalPiecesCount}");
         }
-
-        Debug.Log($"Прогресс: {completedCount}/{allPieces.Length}");
-
-        if (completedCount >= allPieces.Length)
+        else
         {
-            Debug.Log("🎉 ВЕСЬ ПАЗЛ СОБРАН! УРОВЕНЬ ЗАВЕРШЕН!");
-            OnPuzzleComplete();
+            Debug.Log($"Осталось элементов: {totalPiecesCount - lockedPiecesCount}");
         }
     }
 
-    void OnPuzzleComplete()
+    // Метод для проверки заблокирован ли элемент
+    public bool IsLocked()
     {
-
+        return isLocked;
     }
 
     public void ResetPiece()
     {
+        // Если элемент был заблокирован, уменьшаем счетчик
+        if (isLocked)
+        {
+            lockedPiecesCount--;
+        }
+
         transform.position = originalPosition;
         isLocked = false;
         isDragging = false;
@@ -135,5 +152,17 @@ public class PuzzlePieceFixed : MonoBehaviour
         {
             collider.enabled = true;
         }
+    }
+
+    // Статические методы для управления счетчиками
+    public static void ResetCounters()
+    {
+        lockedPiecesCount = 0;
+        totalPiecesCount = 0;
+    }
+
+    public static void SetTotalPiecesCount(int count)
+    {
+        totalPiecesCount = count;
     }
 }

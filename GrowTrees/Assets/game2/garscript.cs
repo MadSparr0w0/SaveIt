@@ -202,7 +202,7 @@ public class GarbageGameManager : MonoBehaviour
     public void GoToMainMenu()
     {
         Debug.Log("🔄 Загрузка главного меню...");
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("Main"); // ИЗМЕНЕНО: "MainMenu" → "Main"
     }
 
     public void ResetLevel()

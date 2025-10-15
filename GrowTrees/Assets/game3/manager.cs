@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using System.Collections;
 
 public class WaterDropManager : MonoBehaviour
 {
@@ -12,8 +13,6 @@ public class WaterDropManager : MonoBehaviour
     public GameObject bucket;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI dropsLeftText;
-    public GameObject gameOverPanel;
-    public TextMeshProUGUI resultText;
 
     [Header("Спавн капель")]
     public RectTransform spawnPanel;
@@ -28,11 +27,21 @@ public class WaterDropManager : MonoBehaviour
     private Camera mainCamera;
     private Canvas canvas;
     private int dropsSpawned = 0;
+    private GameCompletionManager completionManager;
 
     void Start()
     {
         mainCamera = Camera.main;
         canvas = FindObjectOfType<Canvas>();
+
+        // Находим менеджер завершения игры
+        completionManager = FindObjectOfType<GameCompletionManager>();
+        if (completionManager == null)
+        {
+            // Создаем менеджер завершения если его нет
+            GameObject completionObj = new GameObject("GameCompletionManager");
+            completionManager = completionObj.AddComponent<GameCompletionManager>();
+        }
 
         if (spawnPanel == null)
         {
@@ -92,12 +101,9 @@ public class WaterDropManager : MonoBehaviour
             rectTransform = drop.AddComponent<RectTransform>();
         }
 
-        // Устанавливаем якоря в центр для более предсказуемого позиционирования
         rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
-
-        // Устанавливаем размер
         rectTransform.sizeDelta = new Vector2(30, 30);
 
         if (dropsParent != null)
@@ -135,7 +141,6 @@ public class WaterDropManager : MonoBehaviour
         }
         else
         {
-            // Если нет RectTransform, конвертируем UI позицию в мировые координаты
             Vector3 worldPosition = RectTransformToWorldPosition(spawnPosition);
             waterDrops[index].transform.position = worldPosition;
         }
@@ -162,27 +167,21 @@ public class WaterDropManager : MonoBehaviour
             return new Vector2(Random.Range(-200f, 200f), 300f);
         }
 
-        // Получаем реальные границы панели в локальных координатах
         Rect panelRect = spawnPanel.rect;
-
-        // Учитываем паддинг чтобы капли не спавнились слишком близко к краям
         float padding = 20f;
 
-        // Случайная позиция в верхней части панели
         float randomX = Random.Range(-panelRect.width / 2 + padding, panelRect.width / 2 - padding);
-        float spawnY = panelRect.height / 2 - padding; // Верх панели с небольшим отступом
+        float spawnY = panelRect.height / 2 - padding;
 
         return new Vector2(randomX, spawnY);
     }
 
     Vector3 RectTransformToWorldPosition(Vector2 anchoredPosition)
     {
-        // Конвертируем anchoredPosition в мировые координаты
         Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, spawnPanel.TransformPoint(anchoredPosition));
         return mainCamera.ScreenToWorldPoint(new Vector3(screenPoint.x, screenPoint.y, mainCamera.nearClipPlane));
     }
 
-    // Остальные методы остаются без изменений
     public void OnDropCaught()
     {
         if (!gameActive) return;
@@ -241,24 +240,21 @@ public class WaterDropManager : MonoBehaviour
 
     void ShowGameOver(bool isWin)
     {
-        if (gameOverPanel != null)
+        gameActive = false;
+
+        if (completionManager != null)
         {
-            gameActive = false;
-            gameOverPanel.SetActive(true);
+            string winMessage = $"ПОБЕДА!\nПоймано: {dropsCaught}/{totalDrops} капель";
+            string loseMessage = $"ПРОИГРЫШ!\nПоймано: {dropsCaught}/{totalDrops} капель\nНужно было: {dropsToWin}";
 
-            if (isWin)
-            {
-                resultText.text = $"🎉 ПОБЕДА!\nПоймано: {dropsCaught}/{totalDrops} капель";
-                resultText.color = Color.green;
-            }
-            else
-            {
-                resultText.text = $"💔 ПРОИГРЫШ!\nПоймано: {dropsCaught}/{totalDrops} капель\nНужно было: {dropsToWin}";
-                resultText.color = Color.red;
-            }
-
-            Debug.Log($"Игра окончена: {(isWin ? "ПОБЕДА" : "ПРОИГРЫШ")}");
+            completionManager.CompleteGame(isWin, winMessage, loseMessage);
         }
+        else
+        {
+            Debug.LogError("GameCompletionManager не найден!");
+        }
+
+        Debug.Log($"Игра окончена: {(isWin ? "ПОБЕДА" : "ПРОИГРЫШ")}");
     }
 
     void UpdateUI()
@@ -271,12 +267,5 @@ public class WaterDropManager : MonoBehaviour
             int dropsLeft = totalDrops - (dropsCaught + dropsMissed);
             dropsLeftText.text = $"Осталось: {dropsLeft}";
         }
-    }
-
-    public void RestartGame()
-    {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-        );
     }
 }

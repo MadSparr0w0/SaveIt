@@ -2663,7 +2663,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterDropManager
   totalDrops: 10
-  dropsToWin: 7
+  dropsToWin: 1
   waterDrops:
   - {fileID: 745099073}
   - {fileID: 354160120}
@@ -2678,12 +2678,58 @@ MonoBehaviour:
   bucket: {fileID: 1410337985}
   scoreText: {fileID: 0}
   dropsLeftText: {fileID: 0}
-  gameOverPanel: {fileID: 0}
-  resultText: {fileID: 0}
   spawnPanel: {fileID: 994839536}
   dropsParent: {fileID: 994839536}
   minSpawnDelay: 2
   maxSpawnDelay: 4
+--- !u!1 &2144963150
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2144963152}
+  - component: {fileID: 2144963151}
+  m_Layer: 0
+  m_Name: unimanager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2144963151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144963150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7baa31954da4a147972607cba74a246, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::unimanager
+  gameOverPanel: {fileID: 0}
+  gameOverText: {fileID: 0}
+  mainMenuButton: {fileID: 0}
+  mainMenuSceneName: Main
+--- !u!4 &2144963152
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144963150}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.86601, y: 82.71243, z: -88.01041}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2693,3 +2739,4 @@ SceneRoots:
   - {fileID: 1337347675}
   - {fileID: 611437326}
   - {fileID: 2130615823}
+  - {fileID: 2144963152}

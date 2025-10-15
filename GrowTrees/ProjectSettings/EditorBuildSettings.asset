@@ -8,6 +8,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+    guid: 48e96eebcc033a94a9e50613326c9910
+  - enabled: 1
+    path: Assets/game1/minigame1 pazzle.unity
+    guid: 622e575c1e7f2924e823776592041680
+  - enabled: 1
+    path: Assets/game2/minigame2 trash.unity
+    guid: 7004b4c87fdaeee439b19515a8a28562
+  - enabled: 1
+    path: Assets/game3/minigame3 bucket.unity
+    guid: 2f087dd8fcc964c4295aa5f8b6b68be1
   m_configObjects:
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: d70cc95ce6693584ca4ec6e417e52ff7, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
