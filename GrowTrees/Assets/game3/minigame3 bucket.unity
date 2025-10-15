@@ -2663,7 +2663,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterDropManager
   totalDrops: 10
-  dropsToWin: 1
+  dropsToWin: 5
   waterDrops:
   - {fileID: 745099073}
   - {fileID: 354160120}
