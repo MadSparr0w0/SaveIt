@@ -16,13 +16,28 @@ public class PlaceableObject : MonoBehaviour
 
     [Header("Индикатор монет")]
     public GameObject coinIndicatorPrefab;
+    public Vector3 indicatorOffset = new Vector3(0, 3f, 0);
 
-    private float timer = 0f;
-    private bool isReadyForCollection = false;
-    private GameObject coinIndicator;
+    [HideInInspector]
+    public float timer = 0f;
+    [HideInInspector]
+    public bool isReadyForCollection = false;
+    [HideInInspector]
+    public GameObject coinIndicator;
+
+    private Material originalMaterial;
+    private Color originalColor;
+    private bool isBeingEdited = false;
 
     void Start()
     {
+        Renderer renderer = GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            originalMaterial = renderer.material;
+            originalColor = renderer.material.color;
+        }
+
         if (generatesCoins)
         {
             timer = generationTime;
@@ -31,7 +46,7 @@ public class PlaceableObject : MonoBehaviour
 
     void Update()
     {
-        if (generatesCoins && !isReadyForCollection)
+        if (generatesCoins && !isReadyForCollection && !isBeingEdited)
         {
             timer -= Time.deltaTime;
             if (timer <= 0)
@@ -45,15 +60,6 @@ public class PlaceableObject : MonoBehaviour
     {
         isReadyForCollection = true;
 
-        if (coinIndicatorPrefab != null && coinIndicator == null)
-        {
-            coinIndicator = Instantiate(coinIndicatorPrefab);
-
-            coinIndicator.transform.position = transform.position + new Vector3(0, 3f, 0);
-
-            Debug.Log($"{objectName} готов к сбору!");
-        }
-
         Renderer renderer = GetComponent<Renderer>();
         if (renderer != null)
         {
@@ -63,17 +69,34 @@ public class PlaceableObject : MonoBehaviour
 
     void OnMouseDown()
     {
+        if (ShopManager.Instance != null && ShopManager.Instance.isShopOpen)
+            return;
+
+        if (ObjectEditManager.Instance != null && ObjectEditManager.Instance.IsEditing())
+            return;
+
         if (generatesCoins && isReadyForCollection)
         {
             CollectCoins();
         }
+        else
+        {
+            if (ObjectEditManager.Instance != null)
+            {
+                isBeingEdited = true;
+                ObjectEditManager.Instance.SelectObject(this);
+            }
+        }
     }
 
-    void CollectCoins()
+    public void CollectCoins()
     {
+        if (!isReadyForCollection) return;
+
         GameManager.Instance.AddCoins(coinReward);
         isReadyForCollection = false;
         timer = generationTime;
+        isBeingEdited = false;
 
         if (coinIndicator != null)
         {
@@ -82,12 +105,18 @@ public class PlaceableObject : MonoBehaviour
         }
 
         Renderer renderer = GetComponent<Renderer>();
-        if (renderer != null)
+        if (renderer != null && originalMaterial != null)
         {
-            renderer.material.color = Color.white;
+            renderer.material = originalMaterial;
+            renderer.material.color = originalColor;
         }
 
         Debug.Log($"Собрано {coinReward} монет с {objectName}!");
+    }
+
+    public void OnEditFinished()
+    {
+        isBeingEdited = false;
     }
 
     public CoinData GetCoinData()

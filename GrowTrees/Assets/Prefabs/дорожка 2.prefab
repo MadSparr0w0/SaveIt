@@ -63,6 +63,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b737290c8965be341a8f1421769cc125, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8673952116373583999}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b737290c8965be341a8f1421769cc125, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7017893797971349692}
   m_SourcePrefab: {fileID: 100100000, guid: b737290c8965be341a8f1421769cc125, type: 3}
 --- !u!1 &9135329111657264278 stripped
 GameObject:
@@ -89,3 +92,28 @@ MonoBehaviour:
   coinReward: 5
   generationTime: 60
   coinIndicatorPrefab: {fileID: 0}
+  indicatorOffset: {x: 0, y: 3, z: 0}
+  timer: 0
+  isReadyForCollection: 0
+  coinIndicator: {fileID: 0}
+--- !u!65 &7017893797971349692
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9135329111657264278}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

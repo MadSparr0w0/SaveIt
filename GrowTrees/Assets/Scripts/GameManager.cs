@@ -5,8 +5,8 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     [Header("Игровая валюта")]
-    public int coins = 1000;
-    public int greenPoints = 500;
+    public int coins = 10000;
+    public int greenPoints = 10000;
     public int experience = 0;
     public int playerLevel = 1;
 
@@ -17,9 +17,14 @@ public class GameManager : MonoBehaviour
 
     [Header("Сохранение")]
     public bool autoSave = true;
-    public float autoSaveInterval = 60f; 
+    public float autoSaveInterval = 60f;
+
+    [Header("Настройки новой игры")]
+    public bool resetOnFirstLaunch = true;
+    public bool unlockStarterAreaOnly = true;
 
     private float saveTimer = 0f;
+    private bool hasResetOnce = false;
 
     public static GameManager Instance;
 
@@ -28,7 +33,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); 
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -38,8 +43,28 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        CheckFirstLaunchReset();
+
         LoadGame();
         UpdateUI();
+    }
+
+    void CheckFirstLaunchReset()
+    {
+        int hasReset = PlayerPrefs.GetInt("HasResetOnce", 0);
+
+        if (resetOnFirstLaunch && hasReset == 0)
+        {
+            Debug.Log("Первый запуск - выполняем сброс прогресса");
+            ResetGameProgress();
+            PlayerPrefs.SetInt("HasResetOnce", 1);
+            PlayerPrefs.Save();
+            hasResetOnce = true;
+        }
+        else
+        {
+            hasResetOnce = (hasReset == 1);
+        }
     }
 
     void Update()
@@ -98,6 +123,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.Save();
 
         Debug.Log("Игра сохранена! " + System.DateTime.Now.ToString());
+        Debug.Log($"Сохранено объектов: {data.placedObjectsData.Count}");
     }
 
     public void LoadGame()
@@ -117,9 +143,27 @@ public class GameManager : MonoBehaviour
                 foreach (SectionData sectionData in data.sectionsData)
                 {
                     LandSection section = MapManager.Instance.landSections.Find(s => s.sectionName == sectionData.sectionName);
-                    if (section != null && sectionData.isUnlocked)
+                    if (section != null)
                     {
-                        section.Unlock();
+                        if (sectionData.isUnlocked)
+                        {
+                            section.Unlock();
+                        }
+                        else
+                        {
+                            section.isUnlocked = false;
+                            foreach (GameObject cellObj in section.cells)
+                            {
+                                if (cellObj != null)
+                                {
+                                    MapCell cell = cellObj.GetComponent<MapCell>();
+                                    if (cell != null)
+                                    {
+                                        cell.Lock();
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -127,10 +171,47 @@ public class GameManager : MonoBehaviour
             LoadPlacedObjects(data.placedObjectsData);
 
             Debug.Log("Игра загружена! Сохранение от: " + data.saveTime);
+            Debug.Log($"Загружено объектов: {data.placedObjectsData.Count}");
         }
         else
         {
             Debug.Log("Сохранение не найдено. Начинаем новую игру.");
+
+            if (unlockStarterAreaOnly && !hasResetOnce)
+            {
+                UnlockStarterAreaOnly();
+            }
+        }
+    }
+
+    void UnlockStarterAreaOnly()
+    {
+        if (MapManager.Instance != null && MapManager.Instance.landSections.Count > 0)
+        {
+            for (int i = 0; i < MapManager.Instance.landSections.Count; i++)
+            {
+                if (i == 0)
+                {
+                    MapManager.Instance.landSections[i].Unlock();
+                    Debug.Log($"Стартовая зона '{MapManager.Instance.landSections[i].sectionName}' разблокирована");
+                }
+                else
+                {
+                    MapManager.Instance.landSections[i].isUnlocked = false;
+                    foreach (GameObject cellObj in MapManager.Instance.landSections[i].cells)
+                    {
+                        if (cellObj != null)
+                        {
+                            MapCell cell = cellObj.GetComponent<MapCell>();
+                            if (cell != null)
+                            {
+                                cell.Lock();
+                            }
+                        }
+                    }
+                    Debug.Log($"Зона '{MapManager.Instance.landSections[i].sectionName}' заблокирована");
+                }
+            }
         }
     }
 
@@ -139,17 +220,23 @@ public class GameManager : MonoBehaviour
         List<ObjectData> objectsData = new List<ObjectData>();
 
         PlaceableObject[] placedObjects = FindObjectsOfType<PlaceableObject>();
+        Debug.Log($"Найдено объектов на сцене: {placedObjects.Length}");
+
         foreach (PlaceableObject obj in placedObjects)
         {
+            string prefabName = obj.name.Replace("(Clone)", "").Trim();
+
             ObjectData objData = new ObjectData
             {
                 objectName = obj.objectName,
-                prefabName = obj.name.Replace("(Clone)", ""),
+                prefabName = prefabName,
                 position = obj.transform.position,
                 rotation = obj.transform.eulerAngles,
                 coinData = obj.GetCoinData()
             };
             objectsData.Add(objData);
+
+            Debug.Log($"Сохранен объект: {objData.objectName}, префаб: {objData.prefabName}, позиция: {objData.position}");
         }
 
         return objectsData;
@@ -160,30 +247,50 @@ public class GameManager : MonoBehaviour
         PlaceableObject[] existingObjects = FindObjectsOfType<PlaceableObject>();
         foreach (PlaceableObject obj in existingObjects)
         {
-            Destroy(obj.gameObject);
+            if (obj != null)
+                Destroy(obj.gameObject);
         }
+
+        Debug.Log($"Загрузка объектов: {objectsData.Count}");
 
         foreach (ObjectData objData in objectsData)
         {
             GameObject prefab = Resources.Load<GameObject>("Prefabs/" + objData.prefabName);
+
+            if (prefab == null)
+            {
+                prefab = Resources.Load<GameObject>(objData.prefabName);
+            }
+
             if (prefab != null)
             {
                 GameObject newObj = Instantiate(prefab, objData.position, Quaternion.Euler(objData.rotation));
+
                 PlaceableObject placeable = newObj.GetComponent<PlaceableObject>();
-
-                if (placeable != null)
+                if (placeable == null)
                 {
-                    placeable.LoadCoinData(objData.coinData);
+                    placeable = newObj.AddComponent<PlaceableObject>();
                 }
 
-                MapCell cell = MapManager.Instance.GetCellAtPosition(
-                    Mathf.RoundToInt(objData.position.x),
-                    Mathf.RoundToInt(objData.position.z)
-                );
-                if (cell != null)
+                placeable.objectName = objData.objectName;
+                placeable.LoadCoinData(objData.coinData);
+
+                int gridX = Mathf.RoundToInt(objData.position.x);
+                int gridZ = Mathf.RoundToInt(objData.position.z);
+
+                for (int x = gridX; x < gridX + placeable.width; x++)
                 {
-                    cell.PlaceObject(newObj);
+                    for (int z = gridZ; z < gridZ + placeable.height; z++)
+                    {
+                        MapCell cell = MapManager.Instance.GetCellAtPosition(x, z);
+                        if (cell != null)
+                        {
+                            cell.PlaceObject(newObj);
+                        }
+                    }
                 }
+
+                Debug.Log($"Загружен объект: {objData.objectName} на позиции {objData.position}");
             }
             else
             {
@@ -239,6 +346,33 @@ public class GameManager : MonoBehaviour
         if (levelText) levelText.text = $"Level: {playerLevel}";
     }
 
+    public void ResetGameProgress()
+    {
+        Debug.Log("Сброс прогресса игры...");
+
+        coins = 1000;
+        greenPoints = 500;
+        experience = 0;
+        playerLevel = 1;
+
+        if (MapManager.Instance != null)
+        {
+            UnlockStarterAreaOnly();
+        }
+
+        PlaceableObject[] allObjects = FindObjectsOfType<PlaceableObject>();
+        foreach (PlaceableObject obj in allObjects)
+        {
+            if (obj != null)
+                Destroy(obj.gameObject);
+        }
+
+        DeleteSave();
+
+        UpdateUI();
+        Debug.Log("Прогресс игры сброшен!");
+    }
+
     public void QuickSave()
     {
         SaveGame();
@@ -254,5 +388,20 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.DeleteKey("GameSave");
         PlayerPrefs.Save();
         Debug.Log("Сохранение удалено!");
+    }
+
+    public void ForceResetProgress()
+    {
+        ResetGameProgress();
+        PlayerPrefs.SetInt("HasResetOnce", 1);
+        PlayerPrefs.Save();
+    }
+
+    public void CompleteReset()
+    {
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+        ResetGameProgress();
+        Debug.Log("Полный сброс выполнен!");
     }
 }
