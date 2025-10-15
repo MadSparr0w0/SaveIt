@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/game3/minigame3 bucket.unity
     guid: 2f087dd8fcc964c4295aa5f8b6b68be1
   m_configObjects:
+    com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: d1999a7ec1244084bb18cb8d15912950, type: 2}
+    com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 32cbb027777c8cf4b88a188a1f9975ac, type: 2}
+    com.unity.adaptiveperformance.samsung.android.provider_settings: {fileID: 11400000, guid: 60efffb0814141f42841d1fc902c855a, type: 2}
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: d70cc95ce6693584ca4ec6e417e52ff7, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
